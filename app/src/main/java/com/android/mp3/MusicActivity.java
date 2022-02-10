@@ -2,6 +2,7 @@ package com.android.mp3;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +23,10 @@ public class MusicActivity extends AppCompatActivity {
     private ArrayList<String> list;
     // MediaPlayer
     private MediaPlayer mediaPlayer;
+    // Handler
+    private Runnable runnable;
+    private Handler handler;
+    private int totalTime;
 
 
     @Override
@@ -41,6 +46,102 @@ public class MusicActivity extends AppCompatActivity {
 
         onCLickNext();
 
+        setupSeekBarVolume();
+
+        setupSeekBarProgress();
+
+    }
+
+    private String createTimeLabel(int currentPosition) {
+        // 1 min = 60 sec
+        // 1 sec = 1000 milliseconds
+
+        String timeLabel;
+        int minute, second;
+
+        minute = currentPosition / 1000 / 60;
+        second = currentPosition / 1000 % 60;
+
+        if (second < 10) {
+            timeLabel = minute + ":0" + second;
+        } else {
+            timeLabel = minute + ":" + second;
+        }
+        return timeLabel;
+    }
+
+    private void setupSeekBarProgress() {
+        musicSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    mediaPlayer.seekTo(progress);
+                    musicSeekBar.setProgress(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        // Handler
+        handler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                musicSeekBar.setMax(totalTime);
+                totalTime = mediaPlayer.getDuration();
+                int currentPosition = mediaPlayer.getCurrentPosition();
+                handler.postDelayed(runnable, 1000);
+
+                // Label
+                String elapsedTime = createTimeLabel(currentPosition);
+                String lastTime = createTimeLabel(totalTime);
+
+                tvPregress.setText(elapsedTime);
+                tvTotalTime.setText(lastTime);
+
+                if (elapsedTime.equals(lastTime)) {
+                    mediaPlayer.reset();
+                    if (position == list.size() - 1) {
+                        position = 0;
+                    } else {
+                        position++;
+                    }
+                    play();
+                }
+            }
+        };
+        handler.post(runnable);
+    }
+
+    private void setupSeekBarVolume() {
+        volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    volumeSeekBar.setProgress(progress);
+                    float volumeLevel = progress / 100f;
+                    mediaPlayer.setVolume(volumeLevel, volumeLevel);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     private void onClickPrevious() {
