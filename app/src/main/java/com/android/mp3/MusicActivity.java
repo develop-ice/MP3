@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -17,8 +19,7 @@ public class MusicActivity extends AppCompatActivity {
     private Button btnPlayPause, btnNext, btnPrevious;
     private SeekBar volumeSeekBar, musicSeekBar;
     private TextView tvPregress, tvTotalTime, tvFileName;
-    // FILE
-    private String title, filePath;
+    private String filePath;
     private int position;
     private ArrayList<String> list;
     // MediaPlayer
@@ -27,6 +28,8 @@ public class MusicActivity extends AppCompatActivity {
     private Runnable runnable;
     private Handler handler;
     private int totalTime;
+    // Animation
+    private Animation animation;
 
 
     @Override
@@ -201,7 +204,7 @@ public class MusicActivity extends AppCompatActivity {
     }
 
     private void setupData() {
-        title = getIntent().getStringExtra("TITLE");
+        String title = getIntent().getStringExtra("TITLE");
         filePath = getIntent().getStringExtra("FILE_PATH");
         position = getIntent().getIntExtra("POSITION", 0);
         list = getIntent().getStringArrayListExtra("LIST");
@@ -218,6 +221,8 @@ public class MusicActivity extends AppCompatActivity {
             btnPlayPause.setBackgroundResource(R.drawable.ic_pause);
             String newTitle = newFilePath.substring(newFilePath.lastIndexOf("/") + 1);
             tvFileName.setText(newTitle);
+            tvFileName.clearAnimation();
+            tvFileName.startAnimation(animation);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -232,5 +237,8 @@ public class MusicActivity extends AppCompatActivity {
         tvPregress = findViewById(R.id.tv_progress);
         tvTotalTime = findViewById(R.id.tv_total_time);
         tvFileName = findViewById(R.id.tv_file_name_music);
+        // Anim
+        animation = AnimationUtils.loadAnimation(MusicActivity.this, R.anim.translate_animation);
+        tvFileName.setAnimation(animation);
     }
 }
