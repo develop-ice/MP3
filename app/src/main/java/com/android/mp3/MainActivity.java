@@ -9,6 +9,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,8 +24,6 @@ public class MainActivity extends AppCompatActivity {
     // Path
     public static final String MEDIA_PATH = Environment.getExternalStorageDirectory().getPath() + "/";
     private ArrayList<String> songList = new ArrayList<>();
-    // Adapter
-    private MusicAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupAdapter() {
-        adapter = new MusicAdapter(songList, MainActivity.this);
+        MusicAdapter adapter = new MusicAdapter(songList, MainActivity.this);
         recyclerView.setAdapter(adapter);
     }
 
@@ -62,17 +63,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getAllAudioFiles() {
-        if (MEDIA_PATH != null) {
-            File mainFile = new File(MEDIA_PATH);
-            File[] fileList = mainFile.listFiles();
-            for (File file : fileList) {
-                if (file.isDirectory()) {
-                    scanDirectory(file);
-                } else {
-                    String path = file.getAbsolutePath();
-                    if (path.endsWith(".mp3")) {
-                        songList.add(path);
-                    }
+        File mainFile = new File(MEDIA_PATH);
+        File[] fileList = mainFile.listFiles();
+        for (File file : fileList) {
+            if (file.isDirectory()) {
+                scanDirectory(file);
+            } else {
+                String path = file.getAbsolutePath();
+                if (path.endsWith(".mp3")) {
+                    songList.add(path);
                 }
             }
         }
@@ -95,8 +94,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        ImageView imgAlbum = findViewById(R.id.img_album);
         recyclerView = findViewById(R.id.recycler);
         recyclerView.setHasFixedSize(true);
+        Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.rotate_anim);
+        imgAlbum.setAnimation(animation);
+        imgAlbum.startAnimation(animation);
     }
 
 

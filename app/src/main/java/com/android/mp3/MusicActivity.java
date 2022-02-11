@@ -5,11 +5,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,9 +30,6 @@ public class MusicActivity extends AppCompatActivity {
     private Runnable runnable;
     private Handler handler;
     private int totalTime;
-    // Animation
-    private Animation animation;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,9 +97,10 @@ public class MusicActivity extends AppCompatActivity {
         runnable = new Runnable() {
             @Override
             public void run() {
-                musicSeekBar.setMax(totalTime);
-                totalTime = mediaPlayer.getDuration();
                 int currentPosition = mediaPlayer.getCurrentPosition();
+                musicSeekBar.setMax(totalTime);
+                musicSeekBar.setProgress(currentPosition);
+                totalTime = mediaPlayer.getDuration();
                 handler.postDelayed(runnable, 1000);
 
                 // Label
@@ -148,6 +148,7 @@ public class MusicActivity extends AppCompatActivity {
     }
 
     private void onClickPrevious() {
+        setupSeekBarProgress();
         btnPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -221,11 +222,15 @@ public class MusicActivity extends AppCompatActivity {
             btnPlayPause.setBackgroundResource(R.drawable.ic_pause);
             String newTitle = newFilePath.substring(newFilePath.lastIndexOf("/") + 1);
             tvFileName.setText(newTitle);
-            tvFileName.clearAnimation();
-            tvFileName.startAnimation(animation);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mediaPlayer.stop();
     }
 
     private void initView() {
@@ -237,8 +242,13 @@ public class MusicActivity extends AppCompatActivity {
         tvPregress = findViewById(R.id.tv_progress);
         tvTotalTime = findViewById(R.id.tv_total_time);
         tvFileName = findViewById(R.id.tv_file_name_music);
-        // Anim
-        animation = AnimationUtils.loadAnimation(MusicActivity.this, R.anim.translate_animation);
-        tvFileName.setAnimation(animation);
+        ImageView imgAlbum = findViewById(R.id.img_album);
+
+        // GLIDE
+        Glide.with(this)
+                .load(R.drawable.speakers)
+                .asGif().diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(imgAlbum);
+
     }
 }

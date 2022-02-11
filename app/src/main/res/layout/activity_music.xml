@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
+    android:background="@drawable/gradient_background"
     android:padding="8dp"
     tools:context="com.android.mp3.MusicActivity">
 
@@ -49,9 +50,11 @@
         tools:text="@tools:sample/full_names" />
 
     <ImageView
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:padding="24dp"
+        android:id="@+id/img_album"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:scaleType="centerCrop"
+        android:background="@drawable/gradient_background"
         app:srcCompat="@drawable/ic_library_music"
         tools:ignore="ContentDescription" />
 

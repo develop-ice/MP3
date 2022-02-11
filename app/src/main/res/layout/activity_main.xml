@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient_background"
     tools:context="com.android.mp3.MainActivity">
 
     <LinearLayout
@@ -19,10 +20,10 @@
 
         <ImageView
             android:id="@+id/img_album"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:padding="16dp"
-            app:srcCompat="@drawable/ic_library_music" />
+            app:srcCompat="@drawable/record" />
 
     </LinearLayout>
 
